@@ -18,7 +18,7 @@ The other useful function, of interest mostly to altoholics:
 	Library.LibAccounts.available_chars()
 
 This produces a table:
-	{ char, faction, acctid }, ...
+	{ char = char, faction = faction, acctid = acctid }, ...
 
 of characters who are "available".  That's every character on this account,
 plus any characters on other accounts who are of the same faction as at
@@ -44,3 +44,22 @@ You can use /accounts (it ignores any options you give it for now, but
 again, please don't rely on that) for a dump of this shard's info.
 
 LibAccounts doesn't currently expose cross-shard stuff.
+
+Intentionally exposed data:
+	Library.LibAccounts.here = {
+	  chars = { char = acctid, ... },
+	  accounts = { acctid = { char = faction, ... }, ... }
+	}
+	Library.LibAccounts.acctid = number
+
+Intentionally exposed API:
+	Library.LibAccounts.available_chars(acct_only)
+		Yields { char, faction, acctid } tuples for this shard
+		which are on the current account or reachable from characters
+		on this account.  If acct_only is truthy, checks only
+		characters on this account.
+	Library.LibAccounts.acct_of(char)
+		Returns the acctid, if any, that has the named
+		character (or player if char is nil)
+	Library.LibAccounts.available_p(charname)
+		Indicates whether "charname" is believed reachable.

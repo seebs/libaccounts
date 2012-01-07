@@ -9,6 +9,8 @@ Name = {
   French = "LibAccounts",
   German = "LibAccounts",
 }
+Dependencies = { LibGetOpt = { "required", "before" } }
+Embed = { LibGetOpt = true }
 NameShort = "LibAccounts"
 
 Description = {

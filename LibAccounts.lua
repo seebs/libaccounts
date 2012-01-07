@@ -17,7 +17,7 @@
 if not Library then Library = {} end
 local Accounts = {}
 Accounts.shard = "Unknown"
-if not Library.LibAccount then Library.LibAccount = Account end
+if not Library.LibAccounts then Library.LibAccounts = Accounts end
 
 Accounts.DebugLevel = 0
 Accounts.Version = "VERSION"
@@ -78,19 +78,31 @@ end
 
 -- identifies all the characters on this shard that can be reached
 -- from the current character
-function Accounts.available_chars()
+function Accounts.available_chars(acct_only)
   local availables = {}
   local visited = {}
+  Accounts.table_init()
   -- First, we add everything on this account
   if not Accounts.here or not Accounts.here.accounts[Accounts.acctid] then
     Accounts.printf("Warning:  Tried to find available chars, didn't find any.")
     return availables
   end
-  Accounts.populate(availables, visited, Accounts.acctid)
+  Accounts.populate(availables, visited, Accounts.acctid, acct_only)
   return availables
 end
 
-function Accounts.populate(availables, visited, acctid)
+function Accounts.available_p(charname, acct_only)
+  local availables = Accounts.available_chars(acct_only)
+  charname = string.lower(charname)
+  for _, row in ipairs(availables) do
+    if string.lower(row.char) == charname then
+      return true
+    end
+  end
+  return false
+end
+
+function Accounts.populate(availables, visited, acctid, acct_only)
   local factions = {}
   if visited[acctid] then
     return
@@ -101,20 +113,39 @@ function Accounts.populate(availables, visited, acctid)
   visited[acctid] = true
   for char, faction in pairs(Accounts.here.accounts[acctid]) do
     factions[faction] = true
-    table.insert(availables, { char, faction, acctid })
+    table.insert(availables, { char = char, faction = faction, acctid = acctid })
   end
-  for other_acct, chars in pairs(Accounts.here.accounts) do
-    local matched_faction = false
-    for char, faction in pairs(chars) do
-      if factions[faction] then
-        matched_faction = true
-	break
+  if not acct_only then
+    for other_acct, chars in pairs(Accounts.here.accounts) do
+      local matched_faction = false
+      for char, faction in pairs(chars) do
+        if factions[faction] then
+          matched_faction = true
+	  break
+        end
+      end
+      if matched_faction then
+        Accounts.populate(availables, visited, other_acct, acct_only)
       end
     end
-    if matched_faction then
-      Accounts.populate(availables, visited, other_acct)
+  end
+end
+
+function Accounts.acct_of(charname)
+  if not charname then
+    local me = Inspect.Unit.Detail("player")
+    charname = (me and me.name) or "Unknown"
+  end
+  charname = string.lower(charname)
+  Accounts.table_init()
+  for acct, tab in pairs(Accounts.here.accounts) do
+    for char, faction in pairs(tab) do
+      if string.lower(char) == charname then
+        return acct
+      end
     end
   end
+  return nil
 end
 
 function Accounts.slashcommand(args)
@@ -134,7 +165,7 @@ function Accounts.slashcommand(args)
   local chars = Accounts.available_chars()
   for _, row in ipairs(chars) do
     Accounts.printf("  %s (%s, acct %d)",
-      row[1], row[2], row[3])
+      row.char, row.faction, row.acctid)
   end
 end
 

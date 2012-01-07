@@ -1,3 +1,11 @@
+2012/01/07:
+	* Fix dependencies/embed so they actually work.
+	* 0.3
+
+2011/12/12:
+	* Added acct_only flag to available_chars.
+
 2011/12/11:
+	* Added acct_of, called that 0.2, made release.
 	* New toy!
 
