@@ -1,3 +1,12 @@
+2012/03/24:
+	* Modify available list to include both numeric and charname
+	  keys.
+	* Call this 0.5.
+
+2012/01/08:
+	* Fix handling of a second shard once you've already shown up
+	  on one.
+
 2012/01/07:
 	* Fix dependencies/embed so they actually work.
 	* 0.3

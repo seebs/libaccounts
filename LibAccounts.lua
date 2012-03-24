@@ -40,6 +40,8 @@ function Accounts.table_init()
   end
   if not LibAccountsGlobal.shards then
     LibAccountsGlobal.shards = {}
+  end
+  if not LibAccountsGlobal.shards[shard] then
     LibAccountsGlobal.shards[shard] = {
       chars = {},
       accounts = {},
@@ -94,10 +96,8 @@ end
 function Accounts.available_p(charname, acct_only)
   local availables = Accounts.available_chars(acct_only)
   charname = string.lower(charname)
-  for _, row in ipairs(availables) do
-    if string.lower(row.char) == charname then
-      return true
-    end
+  if availables[charname] then
+    return true
   end
   return false
 end
@@ -114,6 +114,7 @@ function Accounts.populate(availables, visited, acctid, acct_only)
   for char, faction in pairs(Accounts.here.accounts[acctid]) do
     factions[faction] = true
     table.insert(availables, { char = char, faction = faction, acctid = acctid })
+    availables[char] = { faction = faction, acctid = acctid }
   end
   if not acct_only then
     for other_acct, chars in pairs(Accounts.here.accounts) do

@@ -19,10 +19,12 @@ The other useful function, of interest mostly to altoholics:
 
 This produces a table:
 	{ char = char, faction = faction, acctid = acctid }, ...
+	char = { faction, acctid }, ...
 
 of characters who are "available".  That's every character on this account,
 plus any characters on other accounts who are of the same faction as at
-least one character on this account, and so on recursively.
+least one character on this account, and so on recursively.  There's numeric
+keys for a complete list, or you can just index by a character.
 
 So if you have account #1:
 	Defiant1
@@ -57,7 +59,8 @@ Intentionally exposed API:
 		Yields { char, faction, acctid } tuples for this shard
 		which are on the current account or reachable from characters
 		on this account.  If acct_only is truthy, checks only
-		characters on this account.
+		characters on this account.  Also char = { faction, acctid }
+		tuples.
 	Library.LibAccounts.acct_of(char)
 		Returns the acctid, if any, that has the named
 		character (or player if char is nil)
